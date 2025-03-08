@@ -9,7 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class TakeAttendancePage extends StatefulWidget {
-  TakeAttendancePage({super.key, required this.ClassId});
+  const TakeAttendancePage({super.key, required this.ClassId});
   final String ClassId;
 
   @override
@@ -70,12 +70,10 @@ class _TakeAttendancePageState extends State<TakeAttendancePage> {
         String studentId = doc.id;
         String bluetoothAddress = doc.get('bluetoothAddress');
         String name = doc.get('name'); // Get the name field
-        if (bluetoothAddress != null) {
-          updatedBluetoothMap[studentId] = {
-            'name': name,
-            'bluetoothAddress': bluetoothAddress,
-          };
-        }
+        updatedBluetoothMap[studentId] = {
+          'name': name,
+          'bluetoothAddress': bluetoothAddress,
+        };
       }
       setState(() {
         bluetoothMap =
@@ -176,7 +174,7 @@ class _TakeAttendancePageState extends State<TakeAttendancePage> {
               'id': result.device.address,
               'rssi': result.rssi ?? -80, // Provide a default value if null
               'distance':
-                  result.rssi != null ? _rssiToDistance(result.rssi!) : null,
+                  result.rssi != null ? _rssiToDistance(result.rssi) : null,
               'type': 'Classic',
             });
           });
@@ -208,11 +206,11 @@ class _TakeAttendancePageState extends State<TakeAttendancePage> {
           .collection('attendancehistory')
           .doc(date) // Use studentId as document ID
           .set({
-              '${studentName}-${studentId}':{
-                  'name':studentName,
-                  'time':time,
-              }
-          }, SetOptions(merge: true));
+        '$studentName-$studentId': {
+          'name': studentName,
+          'time': time,
+        }
+      }, SetOptions(merge: true));
 
       if (kDebugMode) {
         print("Attendance saved for $studentName at $time on $date");
@@ -304,7 +302,10 @@ class _TakeAttendancePageState extends State<TakeAttendancePage> {
                     : "Unknown";
 
                 return ListTile(
-                  title: Text("  "+device['name'] ?? "Unknown Device" ,style: TextStyle(fontSize: 20),),
+                  title: Text(
+                    "  " + device['name'] ?? "Unknown Device",
+                    style: TextStyle(fontSize: 20),
+                  ),
                   trailing: const Icon(Icons.check, color: Colors.green),
                 );
               },

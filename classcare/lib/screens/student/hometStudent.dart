@@ -2,9 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:classcare/screens/student/StudentClassDetails.dart'; // Make sure to import the correct page for class details
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'dart:io';
 
 class homeStudent extends StatefulWidget {
   const homeStudent({super.key});
@@ -207,7 +204,7 @@ class _homeStudentstate extends State<homeStudent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, 
+        automaticallyImplyLeading: false,
         title: Text('Student Dashboard'),
         actions: [
           IconButton(

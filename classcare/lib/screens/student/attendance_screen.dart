@@ -3,7 +3,7 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class AttendanceScreen extends StatefulWidget {
-  const AttendanceScreen({Key? key}) : super(key: key);
+  const AttendanceScreen({super.key});
 
   @override
   _AttendanceScreen createState() => _AttendanceScreen();
@@ -85,7 +85,8 @@ class _AttendanceScreen extends State<AttendanceScreen> {
       // Suggest user turn on Bluetooth manually
       _showBluetoothDialog(
         title: "Turn On Bluetooth",
-        message: "Bluetooth is off. Please turn it on manually in system settings.",
+        message:
+            "Bluetooth is off. Please turn it on manually in system settings.",
       );
     }
   }
@@ -110,15 +111,19 @@ class _AttendanceScreen extends State<AttendanceScreen> {
                   const SizedBox(height: 20),
                   Text(
                     isBluetoothOn ? 'Bluetooth is ON' : 'Bluetooth is OFF',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton.icon(
                     onPressed: _toggleBluetooth,
                     icon: Icon(isBluetoothOn ? Icons.check : Icons.settings),
-                    label: Text(isBluetoothOn ? 'Bluetooth is ON' : 'Turn ON Bluetooth'),
+                    label: Text(isBluetoothOn
+                        ? 'Bluetooth is ON'
+                        : 'Turn ON Bluetooth'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isBluetoothOn ? Colors.green : Colors.blue,
+                      backgroundColor:
+                          isBluetoothOn ? Colors.green : Colors.blue,
                       foregroundColor: Colors.white,
                       minimumSize: const Size(200, 50),
                     ),

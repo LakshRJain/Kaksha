@@ -150,10 +150,11 @@ class PDFUploadService {
 
     Student Submission Text:
     $studentText
-    Analyze the student's submission based on the assignment text and rubric text. If the final answer is wrong, give step marks.
-    Full marks for the assignment is in the rubrics.
-    Be very liberal while giving marks.
-    Give total marks only along with a short overall feedback of strong or weak topics.
+    Act as if you are a teacher, who needs to analyse student's assignments. 
+    Analyze the student's submission based on the assignment text and rubric text.
+    Full marks for the assignment is in the rubrics text.
+    Be very lenient while giving marks. Never give marks less than 75% of total marks.
+    Give total marks only, along with a short overall feedback of strong or weak topics.
     Follow this format:
     "Marks"_"Feedback"
     Always the output should of this format.

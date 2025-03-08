@@ -8,9 +8,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:open_file/open_file.dart';
 
-
-
 class GeneratePdfScreen extends StatefulWidget {
+  const GeneratePdfScreen({super.key});
+
   @override
   _GeneratePdfScreenState createState() => _GeneratePdfScreenState();
 }
@@ -27,7 +27,8 @@ class _GeneratePdfScreenState extends State<GeneratePdfScreen> {
 
   /// Fetch Content from Gemini API
   Future<String> fetchContentFromGemini(String topic) async {
-    const apiKey = 'AIzaSyCgK2Vlkv-aArK2a0wPusEewhx5WWk-oPU'; // Replace with your Gemini API Key
+    const apiKey =
+        'AIzaSyCgK2Vlkv-aArK2a0wPusEewhx5WWk-oPU'; // Replace with your Gemini API Key
     const url =
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey';
 

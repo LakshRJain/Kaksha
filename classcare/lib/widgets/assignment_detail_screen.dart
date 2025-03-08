@@ -57,10 +57,11 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
 
       if (mounted) _showResultDialog(formattedResult, submissionId);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         _showResultDialog(
             {'marks': 'Error', 'feedback': 'Error analyzing submission: $e'},
             submissionId);
+      }
     } finally {
       if (mounted) setState(() => _isAnalyzingMap.remove(submissionId));
     }
@@ -518,7 +519,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
         ),
         textButtonTheme: const TextButtonThemeData(
           style: ButtonStyle(
-              foregroundColor: MaterialStatePropertyAll(Colors.cyanAccent)),
+              foregroundColor: WidgetStatePropertyAll(Colors.cyanAccent)),
         ),
         iconTheme: const IconThemeData(color: Colors.cyanAccent),
         progressIndicatorTheme: ProgressIndicatorThemeData(
@@ -698,7 +699,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                               icon: const Icon(Icons.auto_awesome, size: 18),
                               label: _isAnalyzingAll
                                   ? Text(
-                                      'Analyzing ${_currentAnalyzing}/${_totalToAnalyze}')
+                                      'Analyzing $_currentAnalyzing/$_totalToAnalyze')
                                   : const Text('Analyze All'),
                               onPressed: _isAnalyzingAll
                                   ? null
@@ -727,8 +728,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                                       style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey.shade400)),
-                                  Text(
-                                      '${_currentAnalyzing}/${_totalToAnalyze}',
+                                  Text('$_currentAnalyzing/$_totalToAnalyze',
                                       style: const TextStyle(
                                           fontSize: 12,
                                           color: Colors.cyanAccent,

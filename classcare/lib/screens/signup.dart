@@ -1,6 +1,4 @@
 import 'package:classcare/screens/login.dart';
-import 'package:classcare/screens/student/hometStudent.dart';
-import 'package:classcare/screens/teacher/homeTeacher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,70 +22,75 @@ class _SignupPageState extends State<SignupPage> {
   bool _isLoading = false;
 
   Future<void> _signup() async {
-  if (_formKey.currentState?.validate() ?? false) {
-    if (_passwordController.text != _confirmPasswordController.text) {
-      setState(() {
-        _errorMessage = "Passwords do not match";
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      // 🔄 Send verification email
-      await userCredential.user!.sendEmailVerification();
-
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
-        'email': _emailController.text.trim(),
-        'role': widget.post,
-        'name': _nameController.text.trim(),
-        'isVerified': false, // Optional: Track verification status
-      });
+    if (_formKey.currentState?.validate() ?? false) {
+      if (_passwordController.text != _confirmPasswordController.text) {
+        setState(() {
+          _errorMessage = "Passwords do not match";
+        });
+        return;
+      }
 
       setState(() {
-        _isLoading = false;
-        _errorMessage = "Verification email sent! Please check your inbox.";
+        _isLoading = true;
       });
 
-      // 🔄 Show a dialog prompting the user to verify their email
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text("Verify Your Email"),
-          content: const Text("A verification email has been sent to your inbox. Please verify to proceed."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage(post: widget.post)),
-                );
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = e.message;
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      try {
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        // 🔄 Send verification email
+        await userCredential.user!.sendEmailVerification();
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'email': _emailController.text.trim(),
+          'role': widget.post,
+          'name': _nameController.text.trim(),
+          'isVerified': false, // Optional: Track verification status
+        });
+
+        setState(() {
+          _isLoading = false;
+          _errorMessage = "Verification email sent! Please check your inbox.";
+        });
+
+        // 🔄 Show a dialog prompting the user to verify their email
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Verify Your Email"),
+            content: const Text(
+                "A verification email has been sent to your inbox. Please verify to proceed."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginPage(post: widget.post)),
+                  );
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          _errorMessage = e.message;
+        });
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

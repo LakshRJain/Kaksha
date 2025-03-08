@@ -8,8 +8,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:open_file/open_file.dart';
 
-
 class GenerateQuestionPaperScreen extends StatefulWidget {
+  const GenerateQuestionPaperScreen({super.key});
+
   @override
   _GenerateQuestionPaperScreenState createState() =>
       _GenerateQuestionPaperScreenState();
@@ -17,8 +18,7 @@ class GenerateQuestionPaperScreen extends StatefulWidget {
 
 class _GenerateQuestionPaperScreenState
     extends State<GenerateQuestionPaperScreen> {
-  final TextEditingController _numQuestionsController =
-      TextEditingController();
+  final TextEditingController _numQuestionsController = TextEditingController();
   final TextEditingController _topicController = TextEditingController();
   final TextEditingController _difficultyController = TextEditingController();
   final TextEditingController _marksController = TextEditingController();
@@ -32,9 +32,10 @@ class _GenerateQuestionPaperScreenState
   }
 
   /// Fetch Questions from Gemini API
-  Future<String> fetchQuestionsFromGemini(
-      int numQuestions, String topic, String difficulty, String marks, String description) async {
-    const apiKey = 'AIzaSyCgK2Vlkv-aArK2a0wPusEewhx5WWk-oPU'; // Replace with your Gemini API Key
+  Future<String> fetchQuestionsFromGemini(int numQuestions, String topic,
+      String difficulty, String marks, String description) async {
+    const apiKey =
+        'AIzaSyCgK2Vlkv-aArK2a0wPusEewhx5WWk-oPU'; // Replace with your Gemini API Key
     const url =
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey';
 
@@ -99,7 +100,10 @@ class _GenerateQuestionPaperScreenState
       String marks = _marksController.text.trim();
       String description = _descriptionController.text.trim();
 
-      if (numQuestions <= 0 || topic.isEmpty || difficulty.isEmpty || marks.isEmpty) {
+      if (numQuestions <= 0 ||
+          topic.isEmpty ||
+          difficulty.isEmpty ||
+          marks.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Please fill in all required fields!")),
         );
@@ -128,12 +132,14 @@ class _GenerateQuestionPaperScreenState
             return [
               pw.Text(
                 "Question Paper",
-                style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+                style:
+                    pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 10),
               pw.Text(
                 "Topic: $topic\nDifficulty: $difficulty\nMarks per Question: $marks",
-                style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+                style:
+                    pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 10),
               pw.ListView.builder(
@@ -207,7 +213,8 @@ class _GenerateQuestionPaperScreenState
             ),
             TextField(
               controller: _descriptionController,
-              decoration: InputDecoration(labelText: "Additional Description (Optional)"),
+              decoration: InputDecoration(
+                  labelText: "Additional Description (Optional)"),
             ),
             SizedBox(height: 20),
             _isLoading

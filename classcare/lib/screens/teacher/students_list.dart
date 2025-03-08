@@ -9,7 +9,8 @@ class StudentsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('classes').doc(classId).get(),
+      future:
+          FirebaseFirestore.instance.collection('classes').doc(classId).get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -19,7 +20,7 @@ class StudentsList extends StatelessWidget {
             ),
           );
         }
-        
+
         if (!snapshot.hasData || !snapshot.data!.exists) {
           return _buildEmptyState("No class data found.");
         }
@@ -30,7 +31,8 @@ class StudentsList extends StatelessWidget {
           return _buildEmptyState("No students enrolled.");
         }
 
-        List<String> studentIds = List<String>.from(classData['students'] ?? []);
+        List<String> studentIds =
+            List<String>.from(classData['students'] ?? []);
 
         if (studentIds.isEmpty) {
           return _buildEmptyState("No students enrolled.");
@@ -50,8 +52,9 @@ class StudentsList extends StatelessWidget {
                 ),
               );
             }
-            
-            if (!studentSnapshot.hasData || studentSnapshot.data!.docs.isEmpty) {
+
+            if (!studentSnapshot.hasData ||
+                studentSnapshot.data!.docs.isEmpty) {
               return _buildEmptyState("No student details found.");
             }
 
@@ -64,7 +67,8 @@ class StudentsList extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
                           color: AppColors.accentBlue.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(16),
@@ -86,7 +90,7 @@ class StudentsList extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 // Student list
                 Expanded(
                   child: ListView.builder(
@@ -96,9 +100,10 @@ class StudentsList extends StatelessWidget {
                       var student = students[index];
                       String name = student['name'] ?? 'Unknown';
                       String email = student['email'] ?? 'No Email';
-                      
+
                       return Container(
-                        margin: const EdgeInsets.fromLTRB(16, 0, 16, 8), // Reduced bottom margin
+                        margin: const EdgeInsets.fromLTRB(
+                            16, 0, 16, 8), // Reduced bottom margin
                         decoration: BoxDecoration(
                           color: AppColors.surfaceColor,
                           borderRadius: BorderRadius.circular(12),
@@ -109,7 +114,9 @@ class StudentsList extends StatelessWidget {
                         ),
                         child: ListTile(
                           dense: true, // Makes the tile more compact
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4), // Reduced vertical padding
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4), // Reduced vertical padding
                           title: Text(
                             name,
                             style: const TextStyle(
@@ -131,13 +138,16 @@ class StudentsList extends StatelessWidget {
                               color: AppColors.tertiaryText,
                               size: 18, // Smaller icon
                             ),
-                            padding: EdgeInsets.zero, // Remove padding from icon button
+                            padding: EdgeInsets
+                                .zero, // Remove padding from icon button
                             constraints: BoxConstraints(), // Remove constraints
                             onPressed: () {
                               _showStudentOptionsMenu(context, student);
                             },
                           ),
-                          visualDensity: VisualDensity(horizontal: 0, vertical: -3), // Reduce the overall height
+                          visualDensity: VisualDensity(
+                              horizontal: 0,
+                              vertical: -3), // Reduce the overall height
                         ),
                       );
                     },
@@ -170,7 +180,6 @@ class StudentsList extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          
         ],
       ),
     );
@@ -229,115 +238,118 @@ class StudentsList extends StatelessWidget {
       },
     );
   }
+
   Future<void> _removeStudentFromClass(String studentId) async {
-  try {
-    // Get the class document reference
-    DocumentReference classDoc = FirebaseFirestore.instance.collection('classes').doc(classId);
+    try {
+      // Get the class document reference
+      DocumentReference classDoc =
+          FirebaseFirestore.instance.collection('classes').doc(classId);
 
-    // Use a transaction to safely update the students list
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      DocumentSnapshot snapshot = await transaction.get(classDoc);
+      // Use a transaction to safely update the students list
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(classDoc);
 
-      if (snapshot.exists) {
-        List<dynamic> students = snapshot['students'] ?? [];
+        if (snapshot.exists) {
+          List<dynamic> students = snapshot['students'] ?? [];
 
-        if (students.contains(studentId)) {
-          // Remove the student ID from the list
-          students.remove(studentId);
-          transaction.update(classDoc, {'students': students});
+          if (students.contains(studentId)) {
+            // Remove the student ID from the list
+            students.remove(studentId);
+            transaction.update(classDoc, {'students': students});
+          }
         }
-      }
-    });
+      });
 
-    print("Student removed successfully!");
-  } catch (e) {
-    print("Error removing student: $e");
+      print("Student removed successfully!");
+    } catch (e) {
+      print("Error removing student: $e");
+    }
   }
-}
 
   void _showRemoveConfirmation(BuildContext context, DocumentSnapshot student) {
-  String studentName = student['name'] ?? 'this student';
-  String studentId = student.id; // Get the student ID
+    String studentName = student['name'] ?? 'this student';
+    String studentId = student.id; // Get the student ID
 
-  showDialog(
-    context: context,
-    builder: (context) => Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.85,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.cardColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.4),
-              blurRadius: 15,
-              spreadRadius: 1,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.warning_amber_rounded,
-              color: AppColors.accentRed,
-              size: 32,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              "Remove Student",
-              style: TextStyle(
-                color: AppColors.primaryText,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.85,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppColors.cardColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.4),
+                blurRadius: 15,
+                spreadRadius: 1,
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "Are you sure you want to remove $studentName from this class?",
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.secondaryText,
-                fontSize: 16,
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: AppColors.accentRed,
+                size: 32,
               ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Cancel"),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.secondaryText,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  ),
+              const SizedBox(height: 16),
+              const Text(
+                "Remove Student",
+                style: TextStyle(
+                  color: AppColors.primaryText,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: () async {
-                    Navigator.of(context).pop(); // Close the dialog first
-                    await _removeStudentFromClass(studentId);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accentRed,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  ),
-                  child: const Text("Remove"),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "Are you sure you want to remove $studentName from this class?",
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.secondaryText,
+                  fontSize: 16,
                 ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.secondaryText,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                    ),
+                    child: const Text("Cancel"),
+                  ),
+                  const SizedBox(width: 16),
+                  ElevatedButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop(); // Close the dialog first
+                      await _removeStudentFromClass(studentId);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.accentRed,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                    ),
+                    child: const Text("Remove"),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }
 
 // AppColors class from your original file
@@ -346,14 +358,14 @@ class AppColors {
   static const Color background = Color(0xFF121212);
   static const Color surfaceColor = Color(0xFF1E1E1E);
   static const Color cardColor = Color(0xFF252525);
-  
+
   // Subtle accent colors
   static const Color accentBlue = Color.fromARGB(255, 124, 197, 231);
   static const Color accentGreen = Color(0xFF8FBCBB);
   static const Color accentPurple = Color(0xFFB48EAD);
   static const Color accentYellow = Color(0xFFEBCB8B);
   static const Color accentRed = Color(0xFFBF616A);
-  
+
   // Text colors
   static const Color primaryText = Colors.white;
   static const Color secondaryText = Color(0xFFAAAAAA);
