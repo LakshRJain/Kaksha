@@ -154,7 +154,7 @@ Watch the product demo on:
 
 ## 🪪 License
 
-Femunity is licensed under the MIT license. See [LICENSE](LICENSE) for more information.
+Kaksha is licensed under the MIT license. See [LICENSE](LICENSE) for more information.
 
 --- 
 
