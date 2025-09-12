@@ -1,0 +1,2 @@
+D:/ClassCare/kaksha/android/app/.cxx/Debug/3w6c7366/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/ClassCare/kaksha/android/app/.cxx/Debug/3w6c7366/armeabi-v7a/CMakeFiles/rebuild_cache.dir

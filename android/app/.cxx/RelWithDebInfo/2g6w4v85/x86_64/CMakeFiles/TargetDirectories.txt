@@ -1,0 +1,2 @@
+D:/ClassCare/classcare/android/app/.cxx/RelWithDebInfo/2g6w4v85/x86_64/CMakeFiles/edit_cache.dir
+D:/ClassCare/classcare/android/app/.cxx/RelWithDebInfo/2g6w4v85/x86_64/CMakeFiles/rebuild_cache.dir

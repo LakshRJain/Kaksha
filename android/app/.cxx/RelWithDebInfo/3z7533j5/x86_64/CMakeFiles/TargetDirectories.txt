@@ -1,0 +1,2 @@
+D:/ClassCare/kaksha/android/app/.cxx/RelWithDebInfo/3z7533j5/x86_64/CMakeFiles/edit_cache.dir
+D:/ClassCare/kaksha/android/app/.cxx/RelWithDebInfo/3z7533j5/x86_64/CMakeFiles/rebuild_cache.dir
