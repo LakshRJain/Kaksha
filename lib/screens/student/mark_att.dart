@@ -166,6 +166,7 @@ class _FaceState extends State<Face> {
   }
 
   Widget _buildMarkAttendanceButton() {
+    String userid = FirebaseAuth.instance.currentUser!.uid;
     return Animate(
       effects: const [SlideEffect()],
       child: CardButton(
@@ -173,10 +174,11 @@ class _FaceState extends State<Face> {
         icon: Icons.fingerprint,
         onTap: () {
           Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const AuthenticateFaceView()))
-              .then((result) => _handleAttendanceResult(result));
+              context,
+              MaterialPageRoute(
+                  builder: (_) => AuthenticateFaceView(
+                        userId: userid,
+                      ))).then((result) => _handleAttendanceResult(result));
         },
       ),
     );

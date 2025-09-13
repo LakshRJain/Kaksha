@@ -7,8 +7,8 @@ import 'package:classcare/screens/signup.dart';
 import 'package:lottie/lottie.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.post});
   final String post;
+  const LoginPage({super.key, required this.post});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -41,15 +41,6 @@ class _LoginPageState extends State<LoginPage> {
       );
       final User? user = userCredential.user;
 
-      // Check if email is verified
-      if (user != null && !user.emailVerified) {
-        setState(() {
-          _errorMessage =
-              "Please verify your email before logging in. Check your inbox.";
-        });
-        await FirebaseAuth.instance.signOut(); // Sign out unverified user
-        return;
-      }
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user?.uid)

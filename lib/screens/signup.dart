@@ -51,7 +51,8 @@ class _SignupPageState extends State<SignupPage> {
         });
         return;
       }
-      if (_faceFeatures == null || _faceImage == null) {
+      if (widget.post == "Student" &&
+          (_faceFeatures == null || _faceImage == null)) {
         setState(() {
           _errorMessage = "Please register your face before signing up.";
         });
@@ -64,31 +65,41 @@ class _SignupPageState extends State<SignupPage> {
       });
 
       try {
+        // Create user in Firebase Authentication
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        await userCredential.user!.sendEmailVerification();
+        final uid = userCredential.user!.uid;
 
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .set({
+        // Build userData map for Firestore
+        final Map<String, dynamic> userData = {
+          'uid': uid,
+          'name': _nameController.text.trim(),
           'email': _emailController.text.trim(),
           'role': widget.post,
-          'name': _nameController.text.trim(),
-          'isVerified': false,
-          'faceFeatures': _faceFeatures!.toJson(),
-          'image': _faceImage,
-        });
+          'createdAt': FieldValue.serverTimestamp(),
+        };
+
+        // Only add face details if the role is Student
+        if (widget.post == "Student") {
+          userData['faceFeatures'] = _faceFeatures?.toJson();
+          userData['image'] = _faceImage;
+        }
+
+        // Save user record in Firestore under `users/{uid}`
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .set(userData, SetOptions(merge: true));
 
         setState(() {
           _isLoading = false;
-          _errorMessage = "Verification email sent! Please check your inbox.";
         });
 
+        // Success dialog
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
@@ -255,35 +266,36 @@ class _SignupPageState extends State<SignupPage> {
                   const SizedBox(height: 20),
 
                   // Face Registration Button
-                  SizedBox(
-                    width: 200,
-                    height: 50,
-                    child: OutlinedButton.icon(
-                      onPressed: _registerFace,
-                      icon: Icon(
-                        _faceFeatures == null
-                            ? Icons.face_retouching_off
-                            : Icons.verified_user,
-                        color: Colors.white,
-                      ),
-                      label: Text(
-                        _faceFeatures == null
-                            ? "Register Face"
-                            : "Face Registered",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                            color: Color.fromARGB(255, 114, 196, 203)),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
+                  widget.post == "Student"
+                      ? SizedBox(
+                          width: 200,
+                          height: 50,
+                          child: OutlinedButton.icon(
+                            onPressed: _registerFace,
+                            icon: Icon(
+                              _faceFeatures == null
+                                  ? Icons.face_retouching_off
+                                  : Icons.verified_user,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              _faceFeatures == null
+                                  ? "Register Face"
+                                  : "Face Registered",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                  color: Color.fromARGB(255, 114, 196, 203)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(height: 10),
 
                   // Error Message
                   if (_errorMessage != null)

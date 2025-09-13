@@ -63,9 +63,13 @@ class _StudentClassDetailsState extends State<StudentClassDetails>
   // (only the _giveAttendance method updated)
 
   void _giveAttendance() async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const AuthenticateFaceView()),
+      MaterialPageRoute(
+          builder: (context) => AuthenticateFaceView(
+                userId: userId,
+              )),
     );
 
     if (result == true) {
@@ -73,7 +77,6 @@ class _StudentClassDetailsState extends State<StudentClassDetails>
       setState(() => _isLoading = true);
 
       try {
-        String userId = FirebaseAuth.instance.currentUser!.uid;
         String name = "";
         DocumentSnapshot doc = await FirebaseFirestore.instance
             .collection('users')

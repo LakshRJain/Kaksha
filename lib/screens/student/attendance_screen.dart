@@ -17,7 +17,6 @@ class _AttendanceScreen extends State<AttendanceScreen> {
   final blePeripheral = FlutterBlePeripheral();
   bool isBluetoothOn = false;
   bool isCheckingStatus = true;
-  String studentId = "STUDENT_001"; // Replace with dynamic logic if needed
 
   @override
   void initState() {
@@ -36,7 +35,6 @@ class _AttendanceScreen extends State<AttendanceScreen> {
 
       if (status == BleStatus.ready) {
         _startAdvertising();
-        _uploadToFirestore();
       }
     });
   }
@@ -59,19 +57,6 @@ class _AttendanceScreen extends State<AttendanceScreen> {
     );
 
     blePeripheral.start(advertiseData: advertiseData);
-  }
-
-  // Upload student ID to Firestore
-  void _uploadToFirestore() async {
-    try {
-      await FirebaseFirestore.instance.collection('attendance').add({
-        'studentId': studentId,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-      debugPrint("Uploaded to Firestore.");
-    } catch (e) {
-      debugPrint("Error uploading to Firestore: $e");
-    }
   }
 
   // Show dialog to guide user for Bluetooth settings

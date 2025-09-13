@@ -14,7 +14,8 @@ import 'package:flutter_face_api/face_api.dart' as regula;
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
 class AuthenticateFaceView extends StatefulWidget {
-  const AuthenticateFaceView({super.key});
+  final String userId;
+  AuthenticateFaceView({super.key, required this.userId});
 
   @override
   State<AuthenticateFaceView> createState() => _AuthenticateFaceViewState();
@@ -164,32 +165,47 @@ class _AuthenticateFaceViewState extends State<AuthenticateFaceView> {
 
   // 🔹 Fetch users and compare faces
   _fetchUsersAndMatchFace() {
-    FirebaseFirestore.instance.collection("face").get().catchError((e) {
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(widget.userId) // the known doc id
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        UserModel user = UserModel.fromJson(doc.data()!);
+
+        if (_faceFeatures != null && user.faceFeatures != null) {
+          double similarity = compareFaces(_faceFeatures!, user.faceFeatures!);
+
+          if (similarity >= 0.8 && similarity <= 1.5) {
+            // ✅ Match found
+            users.clear();
+            users.add([user, similarity]);
+            setState(() => users.sort((a, b) => (((a.last as double) - 1).abs())
+                .compareTo(((b.last as double) - 1).abs())));
+            _matchFaces();
+          } else {
+            _showFailureDialog(
+              title: "Face Not Matching",
+              description:
+                  "The captured face does not match the registered one.",
+            );
+          }
+        } else {
+          _showFailureDialog(
+            title: "No Face Registered",
+            description: "This user does not have face features stored.",
+          );
+        }
+      } else {
+        _showFailureDialog(
+          title: "User Not Found",
+          description: "No user found with this ID.",
+        );
+      }
+    }).catchError((e) {
       log("Error: $e");
       setState(() => isMatching = false);
       CustomSnackBar.errorSnackBar("Something went wrong. Please try again.");
-    }).then((snap) {
-      if (snap.docs.isNotEmpty) {
-        users.clear();
-        for (var doc in snap.docs) {
-          UserModel user = UserModel.fromJson(doc.data());
-          if (_faceFeatures != null && user.faceFeatures != null) {
-            double similarity =
-                compareFaces(_faceFeatures!, user.faceFeatures!);
-            if (similarity >= 0.8 && similarity <= 1.5) {
-              users.add([user, similarity]);
-            }
-          }
-        }
-        setState(() => users.sort((a, b) => (((a.last as double) - 1).abs())
-            .compareTo(((b.last as double) - 1).abs())));
-        _matchFaces();
-      } else {
-        _showFailureDialog(
-          title: "No Users Registered",
-          description: "Register users before authenticating.",
-        );
-      }
     });
   }
 

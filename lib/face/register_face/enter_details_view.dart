@@ -96,10 +96,8 @@ class _EnterDetailsViewState extends State<EnterDetailsView> {
                         final String userId = currentUser.uid;
 
                         final user = UserModel(
-                          id: userId,
                           name: _nameController.text.trim().toUpperCase(),
                           image: widget.image,
-                          registeredOn: DateTime.now().millisecondsSinceEpoch,
                           faceFeatures: widget.faceFeatures,
                         );
 
