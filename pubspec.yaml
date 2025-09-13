@@ -72,7 +72,7 @@ dependencies:
   flutter_animate: ^4.5.2
   google_mlkit_face_detection: ^0.12.0
   flutter_face_api:
-    path: C:/Users/atman/Downloads/flutter_face_api-6.1.1/flutter_face_api-6.1.1
+    path: C:\Users\LAKSH\Downloads\flutter_face_api-6.1.1
   image_picker: ^1.1.2
   ble_peripheral: ^2.4.0
 
