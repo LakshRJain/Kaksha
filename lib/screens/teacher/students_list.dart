@@ -4,8 +4,8 @@ import 'package:classcare/widgets/Colors.dart';
 
 class StudentsList extends StatelessWidget {
   final String classId;
-
-  const StudentsList({super.key, required this.classId});
+  final bool post;
+  const StudentsList({super.key, required this.classId , required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -13,14 +13,14 @@ class StudentsList extends StatelessWidget {
       future:
           FirebaseFirestore.instance.collection('classes').doc(classId).get(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: AppColors.accentBlue,
-              strokeWidth: 3,
-            ),
-          );
-        }
+        // if (snapshot.connectionState == ConnectionState.waiting) {
+        //   return Center(
+        //     child: CircularProgressIndicator(
+        //       color: AppColors.accentBlue,
+        //       strokeWidth: 3,
+        //     ),
+        //   );
+        // }
 
         if (!snapshot.hasData || !snapshot.data!.exists) {
           return _buildEmptyState("No class data found.");
@@ -133,7 +133,7 @@ class StudentsList extends StatelessWidget {
                               fontSize: 13, // Smaller font for email
                             ),
                           ),
-                          trailing: IconButton(
+                          trailing: post?IconButton(
                             icon: const Icon(
                               Icons.more_vert,
                               color: AppColors.tertiaryText,
@@ -145,7 +145,7 @@ class StudentsList extends StatelessWidget {
                             onPressed: () {
                               _showStudentOptionsMenu(context, student);
                             },
-                          ),
+                          ):null,
                           visualDensity: VisualDensity(
                               horizontal: 0,
                               vertical: -3), // Reduce the overall height

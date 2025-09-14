@@ -63,6 +63,40 @@ class _StudentClassDetailsState extends State<StudentClassDetails>
   // (only the _giveAttendance method updated)
 
   void _giveAttendance() async {
+    bool? proceed = await showDialog<bool>(
+    context: context,
+    barrierDismissible: false, // user must tap a button
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: AppColors.surfaceColor,
+        title: Text("Turn off Bluetooth" ,style: TextStyle(color: AppColors.primaryText),),
+        content: Text(
+          "Please turn OFF your Bluetooth before continuing. "
+          , style: TextStyle(color: AppColors.primaryText),
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false), // cancel
+            child: Text("Cancel",style: TextStyle(color: AppColors.accentBlue),),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+
+              backgroundColor: AppColors.cardColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(width: 1, color: AppColors.accentBlue),
+              ),
+            ),
+            onPressed: () => Navigator.pop(context, true), // continue
+            child: Text("Continue",style: TextStyle(color: AppColors.accentBlue)  ),
+          ),
+        ],
+      );
+    },
+  );
+    if (proceed != true) return;
     String userId = FirebaseAuth.instance.currentUser!.uid;
     final result = await Navigator.push(
       context,
@@ -487,7 +521,7 @@ class _StudentClassDetailsState extends State<StudentClassDetails>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    StudentsList(classId: widget.classId),
+                    StudentsList(classId: widget.classId,post:false,),
                     AssignmentList(classId: widget.classId),
                     ChatTab(classId: widget.classId),
                   ],

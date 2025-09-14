@@ -595,6 +595,7 @@ class _StudentquizState extends State<Studentquiz> {
 
   Widget _buildEmptyState() {
     return Container(
+      alignment: Alignment.center,
       margin: EdgeInsets.only(top: 30),
       padding: EdgeInsets.all(30),
       decoration: BoxDecoration(

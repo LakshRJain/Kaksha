@@ -6,12 +6,13 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:pdfrx/pdfrx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+ 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  pdfrxFlutterInitialize();
   print("Loading .env...");
   // Load .env file from assets folder
   await dotenv.load(fileName: "assets/.env");

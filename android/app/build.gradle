@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.company.kaksha"
-    compileSdk = 35  // Consistent with other SDK versions
+    compileSdk = 36  // Consistent with other SDK versions
 
     buildFeatures {
         buildConfig = true
@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId "com.company.kaksha"
-        minSdk = 23
+        minSdkVersion = flutter.minSdkVersion
         targetSdk = 35  // Consistent with compileSdk
         versionCode 1
         versionName "1.0.0"

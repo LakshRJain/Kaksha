@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-
+ 
           // Keeps the Sign-up link *fixed at the bottom*
           Positioned(
             bottom: 30,

@@ -4,7 +4,8 @@ import 'dart:ui';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf_render/pdf_render.dart';
+import 'package:pdfrx/pdfrx.dart';
+import 'package:image/image.dart' as img;
 
 class PDFUploadService {
   Future<String> extractTextFromPDF(String fileUrl) async {
@@ -33,30 +34,48 @@ class PDFUploadService {
   }
 
   Future<List<String>> _convertPdfToImages(File pdfFile) async {
-    final pdfDocument = await PdfDocument.openFile(pdfFile.path);
-    final tempDir = await getTemporaryDirectory();
-    List<String> imagePaths = [];
+  // If you didn't initialize in main(), this call is safe (idempotent).
+  pdfrxFlutterInitialize();
 
-    for (int i = 1; i <= pdfDocument.pageCount; i++) {
-      final page = await pdfDocument.getPage(i);
-      final pdfPageImage = await page.render(
-        width: (page.width * 2).toInt(),
-        height: (page.height * 2).toInt(),
+  final document = await PdfDocument.openFile(pdfFile.path);
+  final tempDir = await getTemporaryDirectory();
+  final List<String> imagePaths = [];
+
+  try {
+    // document.pages is a List<PdfPage>; first page is pages[0]
+    for (final page in document.pages) {
+      // Choose target pixel dimensions. (page.width / page.height are in points at 72dpi)
+      final width = (page.width * 2).toInt();   // ~144 DPI
+      final height = (page.height * 2).toInt();
+
+      final pageImage = await page.render(
+        width: width,
+        height: height,
       );
 
-      final image = await pdfPageImage.createImageIfNotAvailable();
-      final byteData = await image.toByteData(format: ImageByteFormat.png);
-      final buffer = byteData!.buffer.asUint8List();
+      if (pageImage == null) continue;
 
-      final imagePath = '${tempDir.path}/page_$i.png';
+      // createImageNF() returns an `image` package Image
+      final imageObj = pageImage.createImageNF();
+
+      // encode to PNG bytes
+      final pngBytes = img.encodePng(imageObj);
+
+      final imagePath = '${tempDir.path}/page_${page.pageNumber}.png';
       final file = File(imagePath);
-      await file.writeAsBytes(buffer);
+      await file.writeAsBytes(pngBytes);
       imagePaths.add(imagePath);
 
-      image.dispose();
+      // free native resources
+      pageImage.dispose();
     }
-    return imagePaths;
+  } finally {
+    // close/dispose document when done
+    await document.dispose();
   }
+
+  return imagePaths;
+}
 
   Future<String> extractTextFromImages(List<String> imagePaths) async {
     if (imagePaths.isEmpty) return "";

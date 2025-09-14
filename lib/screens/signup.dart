@@ -19,13 +19,13 @@ class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _regnocontroller = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   String? _errorMessage;
   bool _isLoading = false;
-
-  // Store face features after registration
+  final regNoRegex = RegExp(r'^[0-9]{2}[A-Z]{3}[0-9]{4}$');
   FaceFeatures? _faceFeatures;
   String? _faceImage;
   Future<void> _registerFace() async {
@@ -65,7 +65,6 @@ class _SignupPageState extends State<SignupPage> {
       });
 
       try {
-        // Create user in Firebase Authentication
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -74,7 +73,6 @@ class _SignupPageState extends State<SignupPage> {
 
         final uid = userCredential.user!.uid;
 
-        // Build userData map for Firestore
         final Map<String, dynamic> userData = {
           'uid': uid,
           'name': _nameController.text.trim(),
@@ -83,13 +81,12 @@ class _SignupPageState extends State<SignupPage> {
           'createdAt': FieldValue.serverTimestamp(),
         };
 
-        // Only add face details if the role is Student
         if (widget.post == "Student") {
           userData['faceFeatures'] = _faceFeatures?.toJson();
           userData['image'] = _faceImage;
+          userData['regno']=_regnocontroller.text.trim();
         }
 
-        // Save user record in Firestore under `users/{uid}`
         await FirebaseFirestore.instance
             .collection('users')
             .doc(uid)
@@ -99,7 +96,6 @@ class _SignupPageState extends State<SignupPage> {
           _isLoading = false;
         });
 
-        // Success dialog
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
@@ -161,19 +157,24 @@ class _SignupPageState extends State<SignupPage> {
                     decoration: InputDecoration(
                       labelText: "Full Name",
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(color: Colors.white, width: 2),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
                       prefixIcon: const Icon(Icons.person, color: Colors.white),
                       labelStyle: const TextStyle(color: Colors.white),
+                      fillColor: const Color.fromARGB(255, 20, 18, 18),
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    
+                      filled: true,
                     ),
                     style: const TextStyle(
                         color: Color.fromARGB(255, 101, 170, 181)),
@@ -188,19 +189,24 @@ class _SignupPageState extends State<SignupPage> {
                     decoration: InputDecoration(
                       labelText: "Email",
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(color: Colors.white, width: 2),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
-                      prefixIcon: const Icon(Icons.email, color: Colors.white),
+                      prefixIcon: const Icon(Icons.person, color: Colors.white),
                       labelStyle: const TextStyle(color: Colors.white),
+                      fillColor: const Color.fromARGB(255, 20, 18, 18),
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    
+                      filled: true,
                     ),
                     style: const TextStyle(
                         color: Color.fromARGB(255, 101, 170, 181)),
@@ -208,27 +214,70 @@ class _SignupPageState extends State<SignupPage> {
                         value!.isEmpty ? "Enter your email" : null,
                   ),
                   const SizedBox(height: 20),
-
+                  widget.post=="Student"? TextFormField(
+                    controller: _regnocontroller,
+                    decoration: InputDecoration(
+                      labelText: "Registration No.",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
+                      ),
+                      prefixIcon: const Icon(Icons.person, color: Colors.white),
+                      labelStyle: const TextStyle(color: Colors.white),
+                      fillColor: const Color.fromARGB(255, 20, 18, 18),
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    
+                      filled: true,
+                    ),
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 101, 170, 181)),
+                    validator: (value){
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter registration number';
+                      } else if (!regNoRegex.hasMatch(value)) {
+                        return 'Invalid format. Example: 23BCE5141';
+                      }
+                      return null; 
+                    }
+                        
+                  ):const SizedBox(),
+                  widget.post=="Student"? SizedBox(height: 20):SizedBox(),
+                  
                   // Password Field
                   TextFormField(
+
                     controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: "Password",
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(color: Colors.white, width: 2),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
-                      prefixIcon: const Icon(Icons.lock, color: Colors.white),
+                      prefixIcon: const Icon(Icons.person, color: Colors.white),
                       labelStyle: const TextStyle(color: Colors.white),
+                      fillColor: const Color.fromARGB(255, 20, 18, 18),
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    
+                      filled: true,
                     ),
                     style: const TextStyle(
                         color: Color.fromARGB(255, 101, 170, 181)),
@@ -244,26 +293,31 @@ class _SignupPageState extends State<SignupPage> {
                     decoration: InputDecoration(
                       labelText: "Confirm Password",
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(color: Colors.white, width: 2),
+                        borderRadius: BorderRadius.circular(12), // Added border radius
+                        borderSide: const BorderSide(color: Colors.white, width: 2),
                       ),
-                      prefixIcon: const Icon(Icons.lock, color: Colors.white),
+                      prefixIcon: const Icon(Icons.person, color: Colors.white),
                       labelStyle: const TextStyle(color: Colors.white),
+                      fillColor: const Color.fromARGB(255, 20, 18, 18),
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    
+                      filled: true,
                     ),
                     style: const TextStyle(
                         color: Color.fromARGB(255, 101, 170, 181)),
                     validator: (value) =>
                         value!.isEmpty ? "Confirm password" : null,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
 
                   // Face Registration Button
                   widget.post == "Student"
@@ -288,6 +342,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 20, 18, 18),
                               side: BorderSide(
                                   color: Color.fromARGB(255, 114, 196, 203)),
                               shape: RoundedRectangleBorder(
@@ -308,7 +363,7 @@ class _SignupPageState extends State<SignupPage> {
                             fontSize: 14),
                       ),
                     ),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 40),
 
                   // Sign Up Button
                   _isLoading
