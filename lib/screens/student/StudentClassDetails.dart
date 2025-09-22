@@ -1,6 +1,5 @@
 import 'package:classcare/calendar/calendar_screen.dart';
 import 'package:classcare/screens/student/attendance_screen.dart';
-import 'package:classcare/screens/student/mark_att.dart';
 import 'package:classcare/screens/teacher/students_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -61,8 +60,6 @@ class _StudentClassDetailsState extends State<StudentClassDetails>
         .get();
   }
 
-  // (only the _giveAttendance method updated)
-
   void _giveAttendance() async {
     String userId = FirebaseAuth.instance.currentUser!.uid;
     final result = await Navigator.push(
@@ -112,17 +109,7 @@ class _StudentClassDetailsState extends State<StudentClassDetails>
         });
 
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Attendance recorded successfully!'),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            backgroundColor: AppColors.accentGreen.withOpacity(0.8),
-            duration: Duration(seconds: 2),
-          ),
-        );
+
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => AttendanceScreen()));
       } catch (e) {
@@ -297,9 +284,126 @@ class _StudentClassDetailsState extends State<StudentClassDetails>
                           SizedBox(width: 10),
                         ],
                       )
-                    : Text("BLE Attendance",
-                        style: TextStyle(color: AppColors.primaryText)),
-                onTap: _isLoading ? null : _giveAttendance,
+                    : Text(
+                        "BLE Attendance",
+                        style: TextStyle(color: AppColors.primaryText),
+                      ),
+                onTap: _isLoading
+                    ? null
+                    : () async {
+                        // Show the pop-up dialog first
+                        bool? confirmed = await showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor: AppColors.cardColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            titlePadding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                            contentPadding: EdgeInsets.fromLTRB(20, 12, 20, 0),
+                            actionsPadding: EdgeInsets.fromLTRB(12, 8, 12, 12),
+                            title: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        AppColors.accentBlue.withOpacity(0.15),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.bluetooth_disabled_rounded,
+                                    color: AppColors.accentBlue,
+                                    size: 22,
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    'Turn off Bluetooth',
+                                    style: TextStyle(
+                                      color: AppColors.primaryText,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Before proceeding with BLE Attendance, please turn off your Bluetooth.',
+                                  style: TextStyle(
+                                    color: AppColors.secondaryText,
+                                    height: 1.4,
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.surfaceColor,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.settings_rounded,
+                                          color: AppColors.accentBlue,
+                                          size: 18),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          'Open Settings > Bluetooth > Switch Off',
+                                          style: TextStyle(
+                                            color: AppColors.primaryText,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                      color: AppColors.accentBlue
+                                          .withOpacity(0.6)),
+                                  foregroundColor: AppColors.accentBlue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text('Cancel'),
+                              ),
+                              FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: AppColors.accentBlue,
+                                  foregroundColor: AppColors.primaryText,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text('I turned it off'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        // If user pressed OK, call _giveAttendance
+                        if (confirmed ?? false) {
+                          _giveAttendance();
+                        }
+                      },
               )
             ])),
         body: Column(
