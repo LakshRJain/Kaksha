@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:classcare/screens/student/StudentClassDetails.dart';
+import 'package:classcare/widgets/Colors.dart';
 
 class homeStudent extends StatefulWidget {
   const homeStudent({super.key});
@@ -12,7 +13,8 @@ class homeStudent extends StatefulWidget {
 
 class _homeStudentstate extends State<homeStudent> {
   final TextEditingController _joinCodeController = TextEditingController();
-  late String _studentName = 'Loading...';
+  late String _studentName = '';
+  late String _regno = '';
   bool _isLoading = true;
 
   @override
@@ -41,6 +43,7 @@ class _homeStudentstate extends State<homeStudent> {
 
       setState(() {
         _studentName = studentDoc['name'] ?? 'Unknown Student';
+        _regno = studentDoc['regno'] ?? 'Unkown Regno';
         _isLoading = false;
       });
     } catch (e) {
@@ -395,10 +398,10 @@ class _homeStudentstate extends State<homeStudent> {
                   ),
                 ),
                 Text(
-                  _isLoading ? "Loading..." : "Hello $_studentName",
+                  _isLoading ? "Loading..." : "$_studentName ($_regno)",
                   style: TextStyle(
                     color: AppColors.secondaryText,
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
                 ),
               ],
@@ -532,19 +535,4 @@ class _homeStudentstate extends State<homeStudent> {
       ),
     );
   }
-}
-
-// AppColors class definition (copy from the teacher dashboard)
-class AppColors {
-  static const Color background = Color.fromARGB(255, 27, 26, 27);
-  static const Color cardColor = Color.fromARGB(255, 45, 45, 45);
-  static const Color surfaceColor = Color.fromARGB(255, 58, 58, 58);
-  static const Color primaryText = Colors.white;
-  static const Color secondaryText = Color.fromARGB(255, 200, 200, 200);
-  static const Color tertiaryText = Color.fromARGB(255, 150, 150, 150);
-  static const Color accentBlue = Color.fromARGB(255, 76, 139, 245);
-  static const Color accentGreen = Color.fromARGB(255, 79, 190, 123);
-  static const Color accentRed = Color.fromARGB(255, 232, 117, 117);
-  static const Color accentYellow = Color.fromARGB(255, 255, 196, 0);
-  static const Color accentPurple = Color.fromARGB(255, 151, 93, 243);
 }

@@ -22,6 +22,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final TextEditingController _regnoController = TextEditingController();
   String? _errorMessage;
   bool _isLoading = false;
 
@@ -85,6 +86,7 @@ class _SignupPageState extends State<SignupPage> {
 
         // Only add face details if the role is Student
         if (widget.post == "Student") {
+          userData['regno'] = _regnoController.text.trim();
           userData['faceFeatures'] = _faceFeatures?.toJson();
           userData['image'] = _faceImage;
         }
@@ -100,26 +102,26 @@ class _SignupPageState extends State<SignupPage> {
         });
 
         // Success dialog
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text("Verify Your Email"),
-            content: const Text(
-                "A verification email has been sent to your inbox. Please verify to proceed."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LoginPage(post: widget.post)),
-                  );
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-        );
+        // showDialog(
+        //   context: context,
+        //   builder: (_) => AlertDialog(
+        //     title: const Text("Verify Your Email"),
+        //     content: const Text(
+        //         "A verification email has been sent to your inbox. Please verify to proceed."),
+        //     actions: [
+        //       TextButton(
+        //         onPressed: () {
+        //           Navigator.pushReplacement(
+        //             context,
+        //             MaterialPageRoute(
+        //                 builder: (context) => LoginPage(post: widget.post)),
+        //           );
+        //         },
+        //         child: const Text("OK"),
+        //       ),
+        //     ],
+        //   ),
+        // );
       } on FirebaseAuthException catch (e) {
         setState(() {
           _errorMessage = e.message;
@@ -208,7 +210,44 @@ class _SignupPageState extends State<SignupPage> {
                         value!.isEmpty ? "Enter your email" : null,
                   ),
                   const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _regnoController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: "Reg No.",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.white),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Colors.white, width: 2),
+                      ),
+                      prefixIcon: const Icon(Icons.lock, color: Colors.white),
+                      labelStyle: const TextStyle(color: Colors.white),
+                    ),
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 101, 170, 181)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please enter your registration number";
+                      }
 
+                      final regNoPattern =
+                          RegExp(r'^[0-9]{2}[A-Z]{3}[0-9]{4}$');
+
+                      if (!regNoPattern.hasMatch(value)) {
+                        return "Invalid format. Example: 23BCE1111";
+                      }
+
+                      return null; // ✅ valid
+                    },
+                  ),
+                  const SizedBox(height: 20),
                   // Password Field
                   TextFormField(
                     controller: _passwordController,
@@ -263,6 +302,7 @@ class _SignupPageState extends State<SignupPage> {
                     validator: (value) =>
                         value!.isEmpty ? "Confirm password" : null,
                   ),
+
                   const SizedBox(height: 20),
 
                   // Face Registration Button

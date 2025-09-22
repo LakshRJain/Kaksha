@@ -4,8 +4,8 @@ import 'package:classcare/widgets/Colors.dart';
 
 class StudentsList extends StatelessWidget {
   final String classId;
-
-  const StudentsList({super.key, required this.classId});
+  final String post;
+  const StudentsList({super.key, required this.classId, required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -133,19 +133,22 @@ class StudentsList extends StatelessWidget {
                               fontSize: 13, // Smaller font for email
                             ),
                           ),
-                          trailing: IconButton(
-                            icon: const Icon(
-                              Icons.more_vert,
-                              color: AppColors.tertiaryText,
-                              size: 18, // Smaller icon
-                            ),
-                            padding: EdgeInsets
-                                .zero, // Remove padding from icon button
-                            constraints: BoxConstraints(), // Remove constraints
-                            onPressed: () {
-                              _showStudentOptionsMenu(context, student);
-                            },
-                          ),
+                          trailing: post == 'teacher'
+                              ? IconButton(
+                                  icon: const Icon(
+                                    Icons.more_vert,
+                                    color: AppColors.tertiaryText,
+                                    size: 18, // Smaller icon
+                                  ),
+                                  padding: EdgeInsets
+                                      .zero, // Remove padding from icon button
+                                  constraints:
+                                      BoxConstraints(), // Remove constraints
+                                  onPressed: () {
+                                    _showStudentOptionsMenu(context, student);
+                                  },
+                                )
+                              : null,
                           visualDensity: VisualDensity(
                               horizontal: 0,
                               vertical: -3), // Reduce the overall height

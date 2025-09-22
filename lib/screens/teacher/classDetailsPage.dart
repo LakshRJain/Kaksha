@@ -1,3 +1,4 @@
+import 'package:classcare/calendar/calendar_screen.dart';
 import 'package:classcare/screens/teacher/attendance_history.dart';
 import 'package:classcare/screens/teacher/pdfgen.dart';
 import 'package:classcare/screens/teacher/qpgen.dart';
@@ -9,24 +10,7 @@ import 'package:classcare/screens/teacher/chat_tab.dart';
 import 'package:flutter/services.dart';
 import 'package:classcare/screens/teacher/take_attendance_page.dart';
 import 'package:classcare/screens/teacher/quiz_generate.dart';
-// Refined color palette with subtle tones
-class AppColors {
-  // come ill show you cme ikk shiw you the appwha
-  static const Color background = Color(0xFF121212);
-  static const Color surfaceColor = Color(0xFF1E1E1E);
-  static const Color cardColor = Color(0xFF252525);
-// Subtle accent colors
-  static const Color accentBlue = Color(0xFF81A1C1);
-  static const Color accentGreen = Color.fromARGB(255, 125, 225, 130);
-  static const Color accentPurple = Color(0xFFB48EAD);
-  static const Color accentYellow = Color(0xFFEBCB8B);
-  static const Color accentRed = Color(0xFFBF616A);
-
-  // Text colors
-  static const Color primaryText = Colors.white;
-  static const Color secondaryText = Color(0xFFAAAAAA);
-  static const Color tertiaryText = Color(0xFF757575);
-}
+import 'package:classcare/widgets/Colors.dart';
 
 class ClassDetailPage extends StatefulWidget {
   final String classId;
@@ -296,6 +280,21 @@ class _ClassDetailPageState extends State<ClassDetailPage>
                 },
               ),
               ListTile(
+                leading: Icon(Icons.calendar_month_sharp,
+                    color: AppColors.accentRed),
+                title: Text("Calendar",
+                    style: TextStyle(color: AppColors.primaryText)),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CalendarScreen(
+                              classId: widget.classId,
+                              className: widget.className,
+                              isTeacher: true)));
+                },
+              ),
+              ListTile(
                 leading: Icon(Icons.assignment, color: AppColors.accentBlue),
                 title: Text("Generate Question Paper",
                     style: TextStyle(color: AppColors.primaryText)),
@@ -319,15 +318,16 @@ class _ClassDetailPageState extends State<ClassDetailPage>
                 },
               ),
               ListTile(
-                leading: Icon(Icons.quiz,
-                    color: AppColors.accentYellow),
+                leading: Icon(Icons.quiz, color: AppColors.accentYellow),
                 title: Text("Quiz",
                     style: TextStyle(color: AppColors.primaryText)),
                 onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => quiz_generate(classId: widget.classId,)));
+                          builder: (context) => quiz_generate(
+                                classId: widget.classId,
+                              )));
                 },
               ),
             ],
@@ -539,7 +539,10 @@ class _ClassDetailPageState extends State<ClassDetailPage>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    StudentsList(classId: widget.classId),  
+                    StudentsList(
+                      classId: widget.classId,
+                      post: "teacher",
+                    ),
                     AssignmentsTab(classId: widget.classId),
                     ChatTab(classId: widget.classId),
                   ],
@@ -552,4 +555,3 @@ class _ClassDetailPageState extends State<ClassDetailPage>
     );
   }
 }
- 

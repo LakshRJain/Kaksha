@@ -1,3 +1,4 @@
+import 'package:classcare/calendar/calendar_screen.dart';
 import 'package:classcare/screens/student/attendance_screen.dart';
 import 'package:classcare/screens/student/mark_att.dart';
 import 'package:classcare/screens/teacher/students_list.dart';
@@ -265,6 +266,22 @@ class _StudentClassDetailsState extends State<StudentClassDetails>
                 },
               ),
               ListTile(
+                leading: Icon(Icons.calendar_month_sharp,
+                    color: AppColors.accentPurple),
+                title: Text("Calendar",
+                    style: TextStyle(color: AppColors.primaryText)),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CalendarScreen(
+                                classId: widget.classId,
+                                className: widget.className,
+                                isTeacher: false,
+                              )));
+                },
+              ),
+              ListTile(
                 leading: Icon(Icons.bluetooth, color: AppColors.accentGreen),
                 title: _isLoading
                     ? Row(
@@ -487,7 +504,10 @@ class _StudentClassDetailsState extends State<StudentClassDetails>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    StudentsList(classId: widget.classId),
+                    StudentsList(
+                      classId: widget.classId,
+                      post: "student",
+                    ),
                     AssignmentList(classId: widget.classId),
                     ChatTab(classId: widget.classId),
                   ],
