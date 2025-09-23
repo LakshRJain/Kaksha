@@ -6,12 +6,12 @@ import 'package:classcare/face/common/utils/custom_snackbar.dart';
 import 'package:classcare/face/common/utils/extract_face_feature.dart';
 import 'package:classcare/face/common/views/camera_view.dart';
 import 'package:classcare/models/user_model.dart';
-import 'package:classcare/screens/student/mark_att.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_face_api/face_api.dart' as regula;
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:classcare/widgets/Colors.dart';
 
 class AuthenticateFaceView extends StatefulWidget {
   final String userId;
@@ -48,80 +48,84 @@ class _AuthenticateFaceViewState extends State<AuthenticateFaceView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: 'Authenticate Face'
-            .gradientText([Colors.blueAccent, Colors.purpleAccent])
-            .animate()
-            .fadeIn(),
-        iconTheme: const IconThemeData(color: Colors.white70),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0F0F0F), Color(0xFF1A1A2E), Color(0xFF16213E)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+        title: Text(
+          'Authenticate Face',
+          style: const TextStyle(
+            color: AppColors.primaryText,
+            fontWeight: FontWeight.w600,
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.2)),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Stack(
-                      children: [
-                        CameraView(
-                          onImage: (image) => _setImage(image),
-                          onInputImage: (inputImage) async {
-                            setState(() => isMatching = true);
-                            _faceFeatures = await extractFaceFeatures(
-                                inputImage, _faceDetector);
+        ).animate().fadeIn(),
+        iconTheme: const IconThemeData(color: AppColors.primaryText),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.surfaceColor),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Stack(
+                    children: [
+                      CameraView(
+                        onImage: (image) => _setImage(image),
+                        onInputImage: (inputImage) async {
+                          setState(() => isMatching = true);
+                          _faceFeatures = await extractFaceFeatures(
+                              inputImage, _faceDetector);
 
-                            if (_faceFeatures != null) {
-                              _fetchUsersAndMatchFace();
-                            } else {
-                              setState(() => isMatching = false);
-                            }
-                          },
-                        ),
-                        if (isMatching)
-                          Center(
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.7),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: const Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircularProgressIndicator(
-                                      color: Colors.blueAccent),
-                                  SizedBox(height: 15),
-                                  Text('Authenticating...',
-                                      style: TextStyle(
-                                          color: Colors.white70, fontSize: 16)),
-                                ],
-                              ),
+                          if (_faceFeatures != null) {
+                            _fetchUsersAndMatchFace();
+                          } else {
+                            setState(() => isMatching = false);
+                          }
+                        },
+                      ),
+                      if (isMatching)
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceColor.withOpacity(0.9),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                  color: AppColors.accentBlue.withOpacity(0.3)),
+                            ),
+                            child: const Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 26,
+                                  height: 26,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 3,
+                                      color: AppColors.accentBlue),
+                                ),
+                                SizedBox(height: 12),
+                                Text('Authenticating...',
+                                    style: TextStyle(
+                                        color: AppColors.primaryText,
+                                        fontSize: 14)),
+                              ],
                             ),
                           ),
-                      ],
-                    ),
+                        ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -264,15 +268,48 @@ class _AuthenticateFaceViewState extends State<AuthenticateFaceView> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(description),
+        backgroundColor: AppColors.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+        contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+        actionsPadding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.accentRed.withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.error_outline,
+                  color: AppColors.accentRed, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: AppColors.primaryText,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          description,
+          style: const TextStyle(color: AppColors.secondaryText, height: 1.4),
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context); // close dialog
               Navigator.pop(context, false); // ❌ return fail
             },
-            child: const Text("OK", style: TextStyle(color: Colors.black)),
+            child: const Text(
+              "OK",
+              style: TextStyle(color: AppColors.accentBlue),
+            ),
           ),
         ],
       ),

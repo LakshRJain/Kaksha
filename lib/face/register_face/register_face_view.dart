@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:animate_do/animate_do.dart';
 import 'package:classcare/face/common/utils/extensions/size_extension.dart';
 import 'package:classcare/face/common/utils/extract_face_feature.dart';
 import 'package:classcare/face/common/views/camera_view.dart';
@@ -6,6 +7,7 @@ import 'package:classcare/face/common/views/custom_button.dart';
 import 'package:classcare/face/register_face/enter_details_view.dart';
 import 'package:classcare/models/user_model.dart';
 import 'package:classcare/screens/student/mark_att.dart';
+import 'package:classcare/screens/teacher/generate_mcq_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
@@ -42,10 +44,7 @@ class _RegisterFaceViewState extends State<RegisterFaceView> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: 'Face Registration'
-            .gradientText([Colors.blueAccent, Colors.purpleAccent])
-            .animate()
-            .fadeIn(),
+        title: Text('Face Registration', style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white70),
       ),
       body: Container(
@@ -130,23 +129,209 @@ class _RegisterFaceViewState extends State<RegisterFaceView> {
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).size.height * 0.05,
                 top: 20,
+                left: 24,
+                right: 24,
               ),
-              child: Animate(
-                effects: const [SlideEffect()],
-                child: CustomButton(
-                  text: "Complete",
-                  icon: Icons.face_retouching_natural,
-                  onTap: (_image != null && _faceFeatures != null)
-                      ? () {
-                          Navigator.pop(context, {
-                            'image': _image!,
-                            'faceFeatures': _faceFeatures!,
-                          });
-                        }
-                      : null,
-                ),
+              child: Column(
+                children: [
+                  // Status indicator
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 20),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: (_image != null && _faceFeatures != null)
+                          ? AppColors.accentGreen.withOpacity(0.1)
+                          : AppColors.accentYellow.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: (_image != null && _faceFeatures != null)
+                            ? AppColors.accentGreen.withOpacity(0.3)
+                            : AppColors.accentYellow.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: (_image != null && _faceFeatures != null)
+                                ? AppColors.accentGreen.withOpacity(0.2)
+                                : AppColors.accentYellow.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            (_image != null && _faceFeatures != null)
+                                ? Icons.check_circle
+                                : Icons.info_outline,
+                            color: (_image != null && _faceFeatures != null)
+                                ? AppColors.accentGreen
+                                : AppColors.accentYellow,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            (_image != null && _faceFeatures != null)
+                                ? 'Face captured and processed successfully!'
+                                : 'Please capture your face to continue',
+                            style: TextStyle(
+                              color: (_image != null && _faceFeatures != null)
+                                  ? AppColors.accentGreen
+                                  : AppColors.accentYellow,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ).animate().fadeInUp(delay: 300.ms, duration: 500.ms),
+
+                  // Complete button
+                  GestureDetector(
+                    onTap: (_image != null && _faceFeatures != null)
+                        ? () {
+                            // Add haptic feedback
+                            // HapticFeedback.mediumImpact();
+
+                            Navigator.pop(context, {
+                              'image': _image!,
+                              'faceFeatures': _faceFeatures!,
+                            });
+                          }
+                        : null,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      width: double.infinity,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        gradient: (_image != null && _faceFeatures != null)
+                            ? LinearGradient(
+                                colors: [
+                                  AppColors.accentBlue,
+                                  AppColors.accentBlue.withOpacity(0.8),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                            : LinearGradient(
+                                colors: [
+                                  AppColors.surfaceColor,
+                                  AppColors.surfaceColor.withOpacity(0.8),
+                                ],
+                              ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: (_image != null && _faceFeatures != null)
+                              ? AppColors.accentBlue.withOpacity(0.3)
+                              : AppColors.surfaceColor,
+                          width: 1,
+                        ),
+                        boxShadow: (_image != null && _faceFeatures != null)
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.accentBlue.withOpacity(0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                  spreadRadius: 1,
+                                ),
+                              ]
+                            : [],
+                      ),
+                      child: Stack(
+                        children: [
+                          // Shimmer effect when enabled
+                          if (_image != null && _faceFeatures != null)
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withOpacity(0.1),
+                                      Colors.white.withOpacity(0.2),
+                                      Colors.white.withOpacity(0.1),
+                                    ],
+                                    stops: const [0.0, 0.5, 1.0],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          // Button content
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: (_image != null &&
+                                            _faceFeatures != null)
+                                        ? Colors.white.withOpacity(0.2)
+                                        : Colors.transparent,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    (_image != null && _faceFeatures != null)
+                                        ? Icons.check_circle
+                                        : Icons.face_retouching_natural,
+                                    color: (_image != null &&
+                                            _faceFeatures != null)
+                                        ? Colors.white
+                                        : AppColors.secondaryText,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                AnimatedDefaultTextStyle(
+                                  duration: const Duration(milliseconds: 300),
+                                  style: TextStyle(
+                                    color: (_image != null &&
+                                            _faceFeatures != null)
+                                        ? Colors.white
+                                        : AppColors.secondaryText,
+                                    fontSize: 16,
+                                    fontWeight: (_image != null &&
+                                            _faceFeatures != null)
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
+                                  ),
+                                  child: Text(
+                                    (_image != null && _faceFeatures != null)
+                                        ? 'Complete Registration'
+                                        : 'Complete',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                      .animate()
+                      .fadeInUp(delay: 400.ms, duration: 600.ms)
+                      .animate(
+                        target:
+                            (_image != null && _faceFeatures != null) ? 1 : 0,
+                      )
+                      .scale(
+                        begin: const Offset(1.0, 1.0),
+                        end: const Offset(1.02, 1.02),
+                        duration: 200.ms,
+                      ),
+                ],
               ),
-            ),
+            )
           ],
         ),
       ),
